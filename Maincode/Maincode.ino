@@ -230,6 +230,7 @@ void loop()
     case 3:
     pressure = bmp085GetPressure(bmp085ReadUP());
     lcd.print (pressure,DEC);
+    // TODO: Implement the humidity sensor and xbee. 
     default:
     lcd.print(keyInput, DEC);
   }
