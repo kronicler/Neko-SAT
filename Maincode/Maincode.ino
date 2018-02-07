@@ -19,7 +19,8 @@ uint8_t cols = 20;
 
 int x, y, z;
 int keyInput = 0;
-
+double temperature;
+int count = 0;
 
 
 // Calibration values
@@ -185,14 +186,14 @@ double getTemp102()
   /* LSB is ORed into the second 4 bits of our byte.
   Bitwise maths is a bit funky, but there's a good
   tutorial on the playground*/
-  convertedTemp = value * 1.0; // need a proper number 
+  convertedTemp = value * 0.0625; // need a proper number 
   return convertedTemp;
 }
 
 void setup() 
 { 
   lcd.init();                 // Init the display, clears the display
-  lcd.print("Hello Chin Chin!");  // Classic Hello World!
+  lcd.print("Hello Chin Chin!");  
   Wire.begin(); // start the I2C library
   Serial.begin(9600); //Start serial comm at 9600 baud
 
@@ -201,6 +202,7 @@ void setup()
   Wire.write(0x02); //select mode register
   Wire.write(0x00); //continuous measurement mode
   Wire.endTransmission();
+  temperature = getTemp102(); // Get temp only when asked for
 
   //Calibrate BMP
   bmp085Calibration();
@@ -212,14 +214,17 @@ void loop()
   keyInput = lcd.keypad();
   lcd.clear();
   //lcd.setCursor(1,0); // Acts as a print new line on the LCD matrix 
-  double temperature;
   long pressure;
+  count++; 
+  if (count > 2000) {
+    temperature = getTemp102(); // refresh temperature
+    count = 0;
+  }
   switch (keyInput) {
-    case 1:
-    temperature = getTemp102(); // Get temp only when asked for
+    case 50:
     lcd.print(temperature, DEC);
     break;
-    case 2: 
+    case 53: 
     getHMC(); // Get HMC only when asked for
     lcd.print (x,DEC);
     lcd.setCursor(1,0);
@@ -227,13 +232,14 @@ void loop()
     lcd.setCursor(2,0);
     lcd.print (z, DEC);
     break;
-    case 3:
+    case 56:
     pressure = bmp085GetPressure(bmp085ReadUP());
     lcd.print (pressure,DEC);
     // TODO: Implement the humidity sensor and xbee. 
     default:
     lcd.print(keyInput, DEC);
   }
+  delay (100);
 }
 
 
