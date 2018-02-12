@@ -1,3 +1,5 @@
+// TODO: Make the receiver send data back from a sensor when it receives the right string. 
+
 #include <XBee.h>
 
 XBee xbee = XBee();
@@ -6,6 +8,15 @@ XBee xbee = XBee();
 XBeeResponse response   = XBeeResponse();
 ZBRxResponse        rx  = ZBRxResponse();
 ModemStatusResponse msr = ModemStatusResponse();
+
+
+// Sending end 
+
+uint8_t payload[30] = "\0";
+XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA02);
+ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
+ZBTxStatusResponse txStatus = ZBTxStatusResponse();
+
 
 int statusLed = 10; // green
 int errorLed  = 11; // red
@@ -63,20 +74,48 @@ void loop()
            flashLed(statusLed, 1, 10); 
         } 
         else 
-        {
-           // we got it (obviously) but sender didn't get an ACK
-                     
-           // flashLed(errorLed, 2, 50);
+        {                     
              flashLed(statusLed, 2, 10); 
-           // returned 65 
-           // Serial.print("rx.getOption: ");
-           // Serial.println(rx.getOption());         
         }
+
+        
         // get data
         String *inData;
         uint8_t* rxData = rx.getData();
 
         Serial.print (String((char *)rxData)); // The data already includes a new line
+        String receiver = String((char *)rxData); 
+        if (receiver == "temp\n") {
+          // Send back temperature data here. 
+          String myString = "hello chin chin";
+          //myString = Serial.readString();
+          if (myString.length() > 0) {
+            for (int i = 0; i < 30; i++)
+            payload[i] = "\0";
+
+            Serial.println ("Message replied!");
+            myString[myString.length()] = "\n";
+            myString.toCharArray(payload, 29);
+          }
+   
+          xbee.send(zbTx);
+        }
+        else if (receiver == "humidity\n") {
+          // Fill in humidity response here. 
+          // Send back temperature data here. 
+          String myString = "hello chin chin humidity here";
+          //myString = Serial.readString();
+          if (myString.length() > 0) {
+            for (int i = 0; i < 30; i++)
+            payload[i] = "\0";
+
+            Serial.println ("Message replied!_humidity");
+            myString[myString.length()] = "\n";
+            myString.toCharArray(payload, 29);
+          }
+   
+          xbee.send(zbTx);
+        }
       } 
       else if (xbee.getResponse().getApiId() == MODEM_STATUS_RESPONSE)
       {

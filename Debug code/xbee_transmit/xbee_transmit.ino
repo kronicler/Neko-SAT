@@ -7,7 +7,9 @@ uint8_t payload[30] = "\0";
 
 // SH + SL Address of receiving XBee                             // Remote XBee    
  XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA08); // address of the receiver XBee
-   
+// Or 0x4098DA02
+
+
 ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
 ZBTxStatusResponse txStatus = ZBTxStatusResponse();
 
