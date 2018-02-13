@@ -44,6 +44,8 @@ void setup()
 
 void loop()
 {  
+   // Add a detector to see if arduino has reecived any serial inputs so that it wont spam
+   // continuously 
    String myString = "";
    myString = Serial.readString();
    if (myString.length() > 0) {
@@ -73,7 +75,7 @@ void loop()
         {
           // success.  time to celebrate
           // flashLed(statusLed, 5, 10); 
-      flashLed(statusLed, 1, 10); 
+        flashLed(statusLed, 1, 10); 
         } 
         else
         {
