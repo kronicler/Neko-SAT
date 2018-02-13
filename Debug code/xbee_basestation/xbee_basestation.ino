@@ -20,6 +20,7 @@ int value     = 0;
 int statusLed = 10; // green
 int errorLed  = 11; // red
 int dataLed   = 12; // yellow
+String myString = "";
 
 void flashLed(int pin, int times, int wait)
 {
@@ -49,17 +50,12 @@ void loop()
 {
     // Add a detector to see if arduino has reecived any serial inputs so that it wont spam
     // continuously
-    String myString = "";
     myString = Serial.readString();
-    /**
     if (myString.length() > 0) {
-        for (int i = 0; i < 30; i++)
-            payload[i] = "\0";
-    */
+        myString.toCharArray(payload, 29);
+        Serial.println ("Message updated!");
+    }
     Serial.println ("Message sent!");
-    myString[myString.length()] = "\n";
-    myString.toCharArray(payload, 29);
-    
     xbee.send(zbTx);
     // flash TX indicator
     flashLed(dataLed, 1, 10);
@@ -69,11 +65,17 @@ void loop()
     // wait up to half a second for the status response
     if (xbee.readPacket(500))
     {
-        xbee.getResponse().getZBRxResponse(rx);
         
-        String *inData;
-        uint8_t* rxData = rx.getData();
-        Serial.print (String((char *)rxData)); // The data already includes a new line
+        if (xbee.getResponse().isAvailable() && xbee.getResponse().getApiId() == ZB_RX_RESPONSE){
+            xbee.getResponse().getZBRxResponse(rx);
+            uint8_t* rxData = rx.getData();
+            Serial.println("Response received");
+            Serial.print (String((char *)rxData)); // The data already includes a new line
+        }
+        
+        
+        
+        
         // got a response!
         // should be a znet tx status
         if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE)
