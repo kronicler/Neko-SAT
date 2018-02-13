@@ -1,4 +1,5 @@
 
+
 #include <XBee.h>
 
 // create the XBee object
@@ -11,6 +12,7 @@ XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA08); // address of the 
 // Or 0x4098DA02
 
 ZBRxResponse        rx  = ZBRxResponse();
+ModemStatusResponse msr = ModemStatusResponse();
 
 
 ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
@@ -63,43 +65,69 @@ void loop()
     
     // after sending a tx request, we expect a status response
     // wait up to half a second for the status response
-    if (xbee.readPacket(500))
+    
+    xbee.readPacket();
+    
+    if (xbee.getResponse().isAvailable())
     {
         
-        if (xbee.getResponse().isAvailable() && xbee.getResponse().getApiId() == ZB_RX_RESPONSE){
-            xbee.getResponse().getZBRxResponse(rx);
-            uint8_t* rxData = rx.getData();
-            Serial.println("Response received");
-            Serial.print (String((char *)rxData)); // The data already includes a new line
-        }
-        
-        
-        
-        
-        // got a response!
-        // should be a znet tx status
-        if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE)
+        // got something
+        if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE)
         {
-            xbee.getResponse().getZBTxStatusResponse(txStatus);
-            // get the delivery status, the fifth byte
-            if (txStatus.getDeliveryStatus() == SUCCESS)
+            // got a zb rx packet
+            // now fill our zb rx class
+            xbee.getResponse().getZBRxResponse(rx);
+            //   if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED)
+            if (rx.getOption() == 65)
             {
-                // success.  time to celebrate
+                // the sender got an ACK
                 // flashLed(statusLed, 5, 10);
                 flashLed(statusLed, 1, 10);
             }
             else
             {
-                // the remote XBee did not receive our packet. is it powered on?
-                flashLed(errorLed, 1, 50);
+                flashLed(statusLed, 2, 10);
+            }
+            
+            
+            // get data
+            uint8_t* rxData = rx.getData();
+            
+            Serial.print (String((char *)rxData));
+            String receiver = String((char *)rxData);
+            
+            
+            
+        }
+        else if (xbee.getResponse().getApiId() == MODEM_STATUS_RESPONSE)
+        {
+            xbee.getResponse().getModemStatusResponse(msr);
+            // the local XBee sends this response on certain events,
+            // like association/dissociation
+            if (msr.getStatus() == ASSOCIATED)
+            {
+                // yay this is great.  flash led
+                flashLed(statusLed, 5, 100);
+            }
+            else if (msr.getStatus() == DISASSOCIATED)
+            {
+                // this is awful.. flash led to show our discontent
+                flashLed(errorLed, 10, 50);
+            }
+            else
+            {
+                // another status
+                flashLed(statusLed, 10, 100);
             }
         }
+        else
+        {
+            // not something we were expecting
+            flashLed(errorLed, 3, 100);
+        }
     }
-    else
-    {
-        // local XBee did not provide a timely TX Status Response -- should not happen
-        flashLed(errorLed, 5, 50);
-    }
+    
+    
     delay(1000);
 }
 
