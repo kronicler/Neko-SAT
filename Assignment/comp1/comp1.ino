@@ -230,42 +230,7 @@ long bmp085GetPressure(unsigned long up)
     return p;
 }
 
-
-
-
-void setup()
-{
-    // start xbee in serial 2
-    Serial2.begin(9600);
-    Serial.begin(9600);
-    xbee.setSerial(Serial2);
-    Wire.begin();
-    
-    //Put the HMC5883 IC into the correct operating mode
-    Wire.beginTransmission(HMC_address); //open communication with HMC5883
-    Wire.write(0x02); //select mode register
-    Wire.write(0x00); //continuous measurement mode
-    Wire.endTransmission();
-    
-    
-    bmp085Calibration();
-    
-}
-
-// continuously reads packets, looking for ZB Receive or Modem Status
-void loop()
-{
-    // Sender adaptation
-    seString = Serial.readString();
-    if (seString.length() > 0) {
-        seString.toCharArray(payload, 29);
-        Serial.println ("Message updated!");
-        Serial.println ("Message sent!");
-        xbee.send(zbTx);
-    }
-    
-    
-    
+void xbee_respond () {
     xbee.readPacket();
     //flashLed(dataLed, 1, 10);
     if (xbee.getResponse().isAvailable())
@@ -282,7 +247,7 @@ void loop()
             
             Serial.print (String((char *)rxData)); // The data already includes a new line
             String receiver = String((char *)rxData);
-           
+            
             if (receiver == "humidity\n") {
                 // Fill in humidity response here.
                 // Send back temperature data here.
@@ -318,3 +283,38 @@ void loop()
         }
     }
 }
+
+
+void setup()
+{
+    // start xbee in serial 2
+    Serial2.begin(9600);
+    Serial.begin(9600);
+    xbee.setSerial(Serial2);
+    Wire.begin();
+    
+    //Put the HMC5883 IC into the correct operating mode
+    Wire.beginTransmission(HMC_address); //open communication with HMC5883
+    Wire.write(0x02); //select mode register
+    Wire.write(0x00); //continuous measurement mode
+    Wire.endTransmission();
+    
+    
+    bmp085Calibration();
+    
+}
+
+// continuously reads packets, looking for ZB Receive or Modem Status
+void loop()
+{
+    // Sender adaptation
+    seString = Serial.readString();
+    if (seString.length() > 0) {
+        seString.toCharArray(payload, 29);
+        Serial.println ("Message updated!");
+        Serial.println ("Message sent!");
+        xbee.send(zbTx);
+    }
+    xbee_respond();
+}
+

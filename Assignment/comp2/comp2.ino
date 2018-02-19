@@ -4,7 +4,7 @@
 #include <LCDi2cR.h>
 
 
-LCDi2cR lcd = LCDi2cR(4, 20, 0x63, 0); 
+LCDi2cR lcd = LCDi2cR(4, 20, 0x63, 0);
 uint8_t rows = 4;
 uint8_t cols = 20;
 
@@ -63,41 +63,7 @@ float getTemp102 () {
     return convertedTemp;
 }
 
-
-void setup()
-{
-    // start xbee in serial 2
-    Serial2.begin(9600);
-    Serial.begin(9600);
-    xbee.setSerial(Serial2);
-    Wire.begin();
-    
-    temp = getTemp102();
-
-    //Put the HMC5883 IC into the correct operating mode
-    Wire.beginTransmission(HMC_address); //open communication with HMC5883
-    Wire.write(0x02); //select mode register
-    Wire.write(0x00); //continuous measurement mode
-    Wire.endTransmission();
-       
-    lcd.init(); // Init & clear display lcd.print("Hello World!"); delay(1000);
-
-}
-
-// continuously reads packets, looking for ZB Receive or Modem Status
-void loop()
-{
-    // Sender adaptation
-    seString = Serial.readString();
-    if (seString.length() > 0) {
-        seString.toCharArray(payload, 29);
-        Serial.println ("Message updated!");
-        Serial.println ("Message sent!");
-        xbee.send(zbTx);
-    }
-    
-    
-    
+void xbee_respond () {
     xbee.readPacket();
     //flashLed(dataLed, 1, 10);
     if (xbee.getResponse().isAvailable())
@@ -115,7 +81,7 @@ void loop()
             String receiver = String((char *)rxData);
             Serial.print (receiver); // The data already includes a new line
             lcd.print(receiver);
-
+            
             
             if (receiver == "temp\n") {
                 // Send back temperature data here.
@@ -132,5 +98,48 @@ void loop()
             xbee.send(zbTx);
         }
     }
+}
+
+
+void setup()
+{
+    // start xbee in serial 2
+    Serial2.begin(9600);
+    Serial.begin(9600);
+    xbee.setSerial(Serial2);
+    Wire.begin();
+    
+    temp = getTemp102();
+    
+    //Put the HMC5883 IC into the correct operating mode
+    Wire.beginTransmission(HMC_address); //open communication with HMC5883
+    Wire.write(0x02); //select mode register
+    Wire.write(0x00); //continuous measurement mode
+    Wire.endTransmission();
+    
+    lcd.init(); // Init & clear display lcd.print("Hello World!"); delay(1000);
+    
+}
+
+// continuously reads packets, looking for ZB Receive or Modem Status
+void loop()
+{
+    // Sender adaptation
+    seString = Serial.readString();
+    if (seString.length() > 0) {
+        seString.toCharArray(payload, 29);
+        Serial.println ("Message updated!");
+        Serial.println ("Message sent!");
+        xbee.send(zbTx);
+    }
+    
+    int keyInput = lcd.keypad();
+    if (keyInput != 32) {
+        switch (keyInput) {
+                // Fill in stuff here
+        }
+    }
+    
+    xbee_respond();
 }
 
