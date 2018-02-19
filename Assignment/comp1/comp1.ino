@@ -30,10 +30,7 @@ long pressure;
 const float p0 = 101325;     // Pressure at sea level (Pa)
 float altitude;
 
-
-String seString = "";
-
-
+String curr_key;
 
 XBee xbee = XBee();
 
@@ -46,8 +43,6 @@ ModemStatusResponse msr = ModemStatusResponse();
 // Sending end
 
 uint8_t payload[30] = "\0";
-String myString = "nothing";
-
 
 
 XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA02);
@@ -230,6 +225,11 @@ long bmp085GetPressure(unsigned long up)
     return p;
 }
 
+
+float getHumidity () {
+    return (float)analogRead(A0)*100 /1024;
+}
+
 void xbee_respond () {
     xbee.readPacket();
     //flashLed(dataLed, 1, 10);
@@ -244,19 +244,26 @@ void xbee_respond () {
             
             // get data
             uint8_t* rxData = rx.getData();
-            
-            Serial.print (String((char *)rxData)); // The data already includes a new line
             String receiver = String((char *)rxData);
+
+            Serial.print (receiver); 
+            String myString = "hello"; 
+
+            // Set the curr_key only if receiver received correctly
+            if (receiver == "humidity")  curr_key = "humidity";
+            else if (receiver == "hmc") curr_key = "hmc";
+            else if (receiver == "baro") curr_key = "baro";
+
             
-            if (receiver == "humidity\n") {
+            if (curr_key == "humidity") {
                 // Fill in humidity response here.
                 // Send back temperature data here.
                 
-                myString = "hello";
+                myString = String (getHumidity());
                 Serial.println ("Message replied!_humidity");
                 
             }
-            else if (receiver == "hmc\n") {
+            else if (curr_key == "hmc") {
                 int x, y, z;
                 getHMC(&x, &y, &z);
                 myString = String(x);
@@ -264,11 +271,11 @@ void xbee_respond () {
                 myString += String(y);
                 myString += " ";
                 myString += String (z);
-                
+
                 Serial.println ("Message replied!_HMC");
                 
             }
-            else if (receiver == "baro\n") {
+            else if (curr_key == "baro") {
                 temperature = bmp085GetTemperature(bmp085ReadUT());
                 pressure = bmp085GetPressure(bmp085ReadUP());
                 
@@ -276,8 +283,10 @@ void xbee_respond () {
                 myString += " ";
                 myString += String (temperature*0.1);
                 Serial.println ("Message replied!_baro");
-                
+
             }
+
+            // Send the payload out
             myString.toCharArray(payload, 29);
             xbee.send(zbTx);
         }
@@ -307,14 +316,6 @@ void setup()
 // continuously reads packets, looking for ZB Receive or Modem Status
 void loop()
 {
-    // Sender adaptation
-    seString = Serial.readString();
-    if (seString.length() > 0) {
-        seString.toCharArray(payload, 29);
-        Serial.println ("Message updated!");
-        Serial.println ("Message sent!");
-        xbee.send(zbTx);
-    }
     xbee_respond();
 }
 

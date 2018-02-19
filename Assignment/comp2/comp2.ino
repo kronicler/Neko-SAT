@@ -11,16 +11,12 @@ uint8_t cols = 20;
 
 
 #define TMP102 0x48
-#define HMC_address 0x1E //0011110b, I2C 7bit address of HMC5883
-
-#define BMP085_ADDRESS 0x77  // I2C address of BMP085
 
 const unsigned char OSS = 0;  // Oversampling Setting
 
-String seString = "";
-
+int count = 0;
 float temp = 0.0;
-
+String curr_key;
 XBee xbee = XBee();
 
 // create reusable response objects for responses we expect to handle
@@ -32,9 +28,6 @@ ModemStatusResponse msr = ModemStatusResponse();
 // Sending end
 
 uint8_t payload[30] = "\0";
-String myString = "nothing";
-
-
 
 XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA08);
 ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
@@ -65,7 +58,6 @@ float getTemp102 () {
 
 void xbee_respond () {
     xbee.readPacket();
-    //flashLed(dataLed, 1, 10);
     if (xbee.getResponse().isAvailable())
     {
         // Serial.println("Received");
@@ -80,21 +72,15 @@ void xbee_respond () {
             uint8_t* rxData = rx.getData();
             String receiver = String((char *)rxData);
             Serial.print (receiver); // The data already includes a new line
+
+            // Print only when it gets a response 
+            
+            lcd.print(temp);
+            lcd.setCursor(1,0);
             lcd.print(receiver);
+
+            // Send only when it gets the response
             
-            
-            if (receiver == "temp\n") {
-                // Send back temperature data here.
-                float temporary = getTemp102();
-                if (temporary > 0) {
-                    temp = temporary;
-                }
-                myString = String(temp);
-                
-                Serial.println ("Message replied!");
-                
-            }
-            myString.toCharArray(payload, 29);
             xbee.send(zbTx);
         }
     }
@@ -108,38 +94,48 @@ void setup()
     Serial.begin(9600);
     xbee.setSerial(Serial2);
     Wire.begin();
-    
+
+    delay (1000);
     temp = getTemp102();
+    // Initiate the first handshake
+    String(temp).toCharArray(payload, 29);
     
-    //Put the HMC5883 IC into the correct operating mode
-    Wire.beginTransmission(HMC_address); //open communication with HMC5883
-    Wire.write(0x02); //select mode register
-    Wire.write(0x00); //continuous measurement mode
-    Wire.endTransmission();
+    xbee.send(zbTx);
     
-    lcd.init(); // Init & clear display lcd.print("Hello World!"); delay(1000);
-    
+    lcd.init(); 
+    lcd.print (String(temp));
+    lcd.setCursor(1,0);
+    lcd.print("Initiated\n");
 }
 
 // continuously reads packets, looking for ZB Receive or Modem Status
 void loop()
 {
     // Sender adaptation
-    seString = Serial.readString();
-    if (seString.length() > 0) {
-        seString.toCharArray(payload, 29);
-        Serial.println ("Message updated!");
-        Serial.println ("Message sent!");
-        xbee.send(zbTx);
-    }
     
     int keyInput = lcd.keypad();
     if (keyInput != 32) {
         switch (keyInput) {
-                // Fill in stuff here
+            case 53:
+            curr_key = "humidity";
+            break; 
+            case 57:
+            curr_key = "hmc";
+            break; 
+            case 55:
+            curr_key = "baro";
+            break;
         }
+    }else {
+        float temp_temperature = getTemp102();
+        if (temp_temperature < 50 && count >= 1000) {
+            temp = temp_temperature;
+            count = 0;
+        }
+        String (temp).toCharArray(payload, 29);
     }
     
+    count++;
     xbee_respond();
 }
 
