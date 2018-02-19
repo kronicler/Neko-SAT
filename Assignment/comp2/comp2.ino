@@ -3,6 +3,7 @@
 
 
 #define HMC_address 0x1E //0011110b, I2C 7bit address of HMC5883
+#define BMP085_ADDRESS 0x77  // I2C address of BMP085
 
 XBee xbee = XBee();
 
