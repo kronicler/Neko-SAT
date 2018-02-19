@@ -286,6 +286,19 @@ void loop()
         if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE)
         {
             xbee.getResponse().getZBRxResponse(rx);
+
+
+
+            if (rx.getOption() == 65) 
+            {
+              //
+            } 
+            else 
+            {
+              //                     
+            }
+
+            
             
             // get data
             uint8_t* rxData = rx.getData();
@@ -339,6 +352,11 @@ void loop()
             xbee.send(zbTx);
         }
     }
+    else if (xbee.getResponse().getApiId() == MODEM_STATUS_RESPONSE)
+      {
+        xbee.getResponse().getModemStatusResponse(msr);
+        Serial.println (msr.getStatus());
+      }
     
 }
 
