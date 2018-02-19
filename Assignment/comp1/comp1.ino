@@ -1,5 +1,3 @@
-// TODO: Make the receiver send data back from a sensor when it receives the right string.
-
 #include <XBee.h>
 #include <Wire.h>
 
@@ -49,34 +47,13 @@ ModemStatusResponse msr = ModemStatusResponse();
 
 uint8_t payload[30] = "\0";
 String myString = "nothing";
-float temp = 0.0;
+
+
 
 XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA02);
 ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
 ZBTxStatusResponse txStatus = ZBTxStatusResponse();
 
-
-float getTemp102 () {
-    // put your main code here, to run repeatedly:
-    byte firstByte, secondByte;
-    int value;
-    float convertedTemp;
-    Wire.beginTransmission(TMP102);
-    Wire.write((byte)0x00);
-    Wire.endTransmission();
-    Wire.requestFrom (TMP102, 2);
-    
-    
-    if ( Wire.available() >= 2 ) {
-        firstByte = (Wire.read());
-        secondByte = (Wire.read());
-        value = ((firstByte) << 4); // MSB
-        value |= (secondByte >> 4); // LSB
-        convertedTemp = value * 0.0625;
-    }
-    //Serial.println (convertedTemp);
-    return convertedTemp;
-}
 
 
 void getHMC (int *x, int *y, int *z) {
@@ -262,10 +239,7 @@ void setup()
     Serial2.begin(9600);
     Serial.begin(9600);
     xbee.setSerial(Serial2);
-    Serial.begin(9600);
     Wire.begin();
-    
-    temp = getTemp102();
     
     //Put the HMC5883 IC into the correct operating mode
     Wire.beginTransmission(HMC_address); //open communication with HMC5883
@@ -275,7 +249,7 @@ void setup()
     
     
     bmp085Calibration();
-
+    
 }
 
 // continuously reads packets, looking for ZB Receive or Modem Status
@@ -290,7 +264,7 @@ void loop()
     Serial.println ("Message sent!");
     xbee.send(zbTx);
     
-  
+    
     xbee.readPacket();
     //flashLed(dataLed, 1, 10);
     if (xbee.getResponse().isAvailable())
@@ -307,19 +281,8 @@ void loop()
             
             Serial.print (String((char *)rxData)); // The data already includes a new line
             String receiver = String((char *)rxData);
-            
-            if (receiver == "temp\n") {
-                // Send back temperature data here.
-                float temporary = getTemp102();
-                if (temporary > 0) {
-                    temp = temporary;
-                }
-                myString = String(temp);
-                
-                Serial.println ("Message replied!");
-                
-            }
-            else if (receiver == "humidity\n") {
+           
+            if (receiver == "humidity\n") {
                 // Fill in humidity response here.
                 // Send back temperature data here.
                 
@@ -348,13 +311,10 @@ void loop()
                 myString += " ";
                 myString += String (temperature*0.1);
                 Serial.println ("Message replied!_baro");
-
+                
             }
             myString.toCharArray(payload, 29);
             xbee.send(zbTx);
         }
     }
-    delay (1000);
 }
-
-
