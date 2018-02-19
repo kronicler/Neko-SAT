@@ -1,7 +1,8 @@
 #include <XBee.h>
 #include <Wire.h> //I2C Arduino Library
+
+
 #define HMC_address 0x1E //0011110b, I2C 7bit address of HMC5883
-#define BMP085_ADDRESS 0x77  // I2C address of BMP085
 
 XBee xbee = XBee();
 
@@ -233,9 +234,11 @@ void setup()
     xbee.setSerial(Serial2);
     Serial.begin(9600);
     
-    Wire.begin();
-    
     bmp085Calibration();
+
+    
+    
+    Wire.begin();
 
     //Put the HMC5883 IC into the correct operating mode
     Wire.beginTransmission(HMC_address); //open communication with HMC5883
@@ -313,7 +316,7 @@ void loop()
                 temperature = bmp085GetTemperature(bmp085ReadUT());
                 pressure = bmp085GetPressure(bmp085ReadUP());
                 String myString = String(temperature);
-                myString += " ";
+                myString += "\n";
                 myString += String (pressure);
                 
                 if (myString.length() > 0) {
