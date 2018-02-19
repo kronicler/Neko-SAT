@@ -313,7 +313,7 @@ void loop()
                 temperature = bmp085GetTemperature(bmp085ReadUT());
                 pressure = bmp085GetPressure(bmp085ReadUP());
                 String myString = String(temperature);
-                myString += "\n";
+                myString += " ";
                 myString += String (pressure);
                 
                 if (myString.length() > 0) {
