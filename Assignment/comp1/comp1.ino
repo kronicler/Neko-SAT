@@ -12,7 +12,7 @@ uint8_t cols = 20;
 
 const unsigned char OSS = 0;  // Oversampling Setting
 
-int count = 0;
+int count = 5000;
 float temp = 0.0;
 String curr_key;
 XBee xbee = XBee();
