@@ -128,10 +128,12 @@ void loop()
             break;
         }
     }else {
-        float temp_temperature = getTemp102();
-        if (temp_temperature < 50 && count >= 1000) {
-            temp = temp_temperature;
-            count = 0;
+        if (count >= 5000) {
+            float temp_temperature = getTemp102();
+            if (temp_temperature < 50) {
+                temp = temp_temperature;
+                count = 0;
+            } 
         }
         String (temp).toCharArray(payload, 29);
     }
