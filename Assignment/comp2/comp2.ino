@@ -92,9 +92,10 @@ void loop()
     if (seString.length() > 0) {
         seString.toCharArray(payload, 29);
         Serial.println ("Message updated!");
+        Serial.println ("Message sent!");
+        xbee.send(zbTx);
     }
-    Serial.println ("Message sent!");
-    xbee.send(zbTx);
+    
     
     
     xbee.readPacket();
