@@ -118,12 +118,18 @@ void loop()
         switch (keyInput) {
             case 53:
             curr_key = "humidity";
+            curr_key.toCharArray(payload, 29);
+            xbee.send(zbTx);
             break; 
             case 57:
             curr_key = "hmc";
+            curr_key.toCharArray(payload, 29);
+            xbee.send(zbTx);
             break; 
             case 55:
             curr_key = "baro";
+            curr_key.toCharArray(payload, 29);
+            xbee.send(zbTx);
             break;
         }
     }else {
