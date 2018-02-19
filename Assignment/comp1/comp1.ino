@@ -73,8 +73,8 @@ void xbee_respond () {
 
             // Print only when it gets a response 
             
-            //lcd.print(temp);
-            //lcd.setCursor(1,0);
+            lcd.print(temp);
+            lcd.setCursor(1,0);
             lcd.println(receiver);
 
             // Send only when it gets the response
