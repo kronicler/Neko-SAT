@@ -11,9 +11,6 @@ uint8_t cols = 20;
 
 
 #define TMP102 0x48
-#define HMC_address 0x1E //0011110b, I2C 7bit address of HMC5883
-
-#define BMP085_ADDRESS 0x77  // I2C address of BMP085
 
 const unsigned char OSS = 0;  // Oversampling Setting
 
@@ -80,6 +77,8 @@ void xbee_respond () {
             uint8_t* rxData = rx.getData();
             String receiver = String((char *)rxData);
             Serial.print (receiver); // The data already includes a new line
+            lcd.print(temp);
+            lcd.setCursor(1,0);
             lcd.print(receiver);
             
             
@@ -92,10 +91,10 @@ void xbee_respond () {
                 myString = String(temp);
                 
                 Serial.println ("Message replied!");
-                
+                myString.toCharArray(payload, 29);
+                xbee.send(zbTx);
             }
-            myString.toCharArray(payload, 29);
-            xbee.send(zbTx);
+            
         }
     }
 }
@@ -110,12 +109,6 @@ void setup()
     Wire.begin();
     
     temp = getTemp102();
-    
-    //Put the HMC5883 IC into the correct operating mode
-    Wire.beginTransmission(HMC_address); //open communication with HMC5883
-    Wire.write(0x02); //select mode register
-    Wire.write(0x00); //continuous measurement mode
-    Wire.endTransmission();
     
     lcd.init(); // Init & clear display lcd.print("Hello World!"); delay(1000);
     
@@ -136,8 +129,18 @@ void loop()
     int keyInput = lcd.keypad();
     if (keyInput != 32) {
         switch (keyInput) {
-                // Fill in stuff here
+            case 57:
+            seString = "hmc\n";
+            break;
+            case 55:
+            seString = "baro\n";
+            break;
+            case 53:
+            seString = "humidity\n";
+            break;
         }
+        seString.toCharArray(payload, 29);
+        xbee.send(zbTx);
     }
     
     xbee_respond();

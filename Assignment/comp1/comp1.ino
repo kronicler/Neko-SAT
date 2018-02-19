@@ -230,6 +230,11 @@ long bmp085GetPressure(unsigned long up)
     return p;
 }
 
+float getHumidty () {
+    return (float)analogRead(A0)*100 /1024;
+}
+
+
 void xbee_respond () {
     xbee.readPacket();
     //flashLed(dataLed, 1, 10);
@@ -252,7 +257,7 @@ void xbee_respond () {
                 // Fill in humidity response here.
                 // Send back temperature data here.
                 
-                myString = "hello";
+                myString = String (getHumidty());
                 Serial.println ("Message replied!_humidity");
                 
             }
