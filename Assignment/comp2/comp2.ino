@@ -1,30 +1,14 @@
 #include <XBee.h>
-#include <Wire.h> //I2C Arduino Library
+#include <Wire.h>
 
-
+#define TMP102 0x48
 #define HMC_address 0x1E //0011110b, I2C 7bit address of HMC5883
+
 #define BMP085_ADDRESS 0x77  // I2C address of BMP085
-
-XBee xbee = XBee();
-
-// create reusable response objects for responses we expect to handle
-XBeeResponse response   = XBeeResponse();
-ZBRxResponse        rx  = ZBRxResponse();
-ModemStatusResponse msr = ModemStatusResponse();
-
-
-// Sending end
-uint8_t payload[30] = "\0";
-XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA02);
-ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
-ZBTxStatusResponse txStatus = ZBTxStatusResponse();
-
-
-// Barometer stuff
 
 const unsigned char OSS = 0;  // Oversampling Setting
 
-// Calibration values
+// Calibration values - for Barometer
 int ac1;
 int ac2;
 int ac3;
@@ -36,6 +20,7 @@ int b2;
 int mb;
 int mc;
 int md;
+
 long b5;
 
 short temperature;
@@ -45,6 +30,24 @@ long pressure;
 const float p0 = 101325;     // Pressure at sea level (Pa)
 float altitude;
 
+String curr_key;
+
+XBee xbee = XBee();
+
+// create reusable response objects for responses we expect to handle
+XBeeResponse response   = XBeeResponse();
+ZBRxResponse        rx  = ZBRxResponse();
+ModemStatusResponse msr = ModemStatusResponse();
+
+
+// Sending end
+
+uint8_t payload[30] = "\0";
+
+
+XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA02);
+ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
+ZBTxStatusResponse txStatus = ZBTxStatusResponse();
 
 
 
@@ -66,11 +69,6 @@ void getHMC (int *x, int *y, int *z) {
         *y |= Wire.read(); //Y lsb
     }
 }
-
-float getHumidity () {
-    return (float)analogRead(A0)*100 /1024;
-}
-
 
 char bmp085Read(unsigned char address)
 {
@@ -228,30 +226,13 @@ long bmp085GetPressure(unsigned long up)
 }
 
 
-void setup()
-{
-    
-    Serial2.begin(9600);
-    xbee.setSerial(Serial2);
-    Serial.begin(9600);
-    
-    bmp085Calibration();
-
-    
-    
-    Wire.begin();
-
-    //Put the HMC5883 IC into the correct operating mode
-    Wire.beginTransmission(HMC_address); //open communication with HMC5883
-    Wire.write(0x02); //select mode register
-    Wire.write(0x00); //continuous measurement mode
-    Wire.endTransmission();
+float getHumidity () {
+    return (float)analogRead(A0)*100 /1024;
 }
 
-// continuously reads packets, looking for ZB Receive or Modem Status
-void loop()
-{
+void xbee_respond () {
     xbee.readPacket();
+    //flashLed(dataLed, 1, 10);
     if (xbee.getResponse().isAvailable())
     {
         // Serial.println("Received");
@@ -259,65 +240,83 @@ void loop()
         // got something
         if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE)
         {
-            // got a zb rx packet
-            // now fill our zb rx class
             xbee.getResponse().getZBRxResponse(rx);
-            //   if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED)
-            if (rx.getOption() == 65)
-            {
-                // the sender got an ACK
-            }
-            else
-            {
-            }
-            
             
             // get data
             uint8_t* rxData = rx.getData();
             String receiver = String((char *)rxData);
 
-            Serial.print (receiver);
+            Serial.println (receiver); 
+            String myString = "hello"; 
+
+            // Set the curr_key only if receiver received correctly
+            if (receiver == "humidity\n")  curr_key = "humidity";
+            else if (receiver == "hmc\n") curr_key = "hmc";
+            else if (receiver == "baro\n") curr_key = "baro";
+
             
-            if (receiver == "humidity\n") {
-                String myString = String(getHumidity());
+            if (curr_key == "humidity") {
+                // Fill in humidity response here.
+                // Send back temperature data here.
                 
-                 Serial.println ("Message replied!_humidty");
-                 myString.toCharArray(payload, 29);
+                myString = String (getHumidity());
+                Serial.println ("Message replied!_humidity");
                 
-                xbee.send(zbTx);
             }
-            else if (receiver == "hmc\n") {
+            else if (curr_key == "hmc") {
                 int x, y, z;
-                getHMC (&x, &y, &z);
-                String myString = String(x);
+                getHMC(&x, &y, &z);
+                myString = String(x);
                 myString += " ";
-                myString += String (y);
+                myString += String(y);
                 myString += " ";
                 myString += String (z);
+
+                Serial.println ("Message replied!_HMC");
                 
-               
-                    
-                Serial.println ("Message replied!_hmc");
-                myString.toCharArray(payload, 29);
-                
-                xbee.send(zbTx);
             }
-            
-            
-            else if (receiver == "baro\n") {
+            else if (curr_key == "baro") {
                 temperature = bmp085GetTemperature(bmp085ReadUT());
                 pressure = bmp085GetPressure(bmp085ReadUP());
-                String myString = String(temperature);
-                myString += "\n";
-                myString += String (pressure);
                 
+                myString = String(pressure);
+                myString += " ";
+                myString += String (temperature*0.1);
                 Serial.println ("Message replied!_baro");
-                myString.toCharArray(payload, 29);
-                
-                xbee.send(zbTx);
+
             }
-            
+
+            // Send the payload out
+            delay(1000);
+            myString.toCharArray(payload, 29);
+            xbee.send(zbTx);
         }
     }
+}
+
+
+void setup()
+{
+    // start xbee in serial 2
+    Serial2.begin(9600);
+    Serial.begin(9600);
+    xbee.setSerial(Serial2);
+    Wire.begin();
+    
+    //Put the HMC5883 IC into the correct operating mode
+    Wire.beginTransmission(HMC_address); //open communication with HMC5883
+    Wire.write(0x02); //select mode register
+    Wire.write(0x00); //continuous measurement mode
+    Wire.endTransmission();
+    
+    
+    bmp085Calibration();
+    
+}
+
+// continuously reads packets, looking for ZB Receive or Modem Status
+void loop()
+{
+    xbee_respond();
 }
 
