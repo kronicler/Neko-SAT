@@ -72,10 +72,17 @@ void xbee_respond () {
             Serial.print (receiver); // The data already includes a new line
 
             // Print only when it gets a response 
-            
-            lcd.print(temp);
+            String lcd_screen; 
+            lcd_screen = "My temp: ";
+            lcd_screen += String(temp);
+            lcd.print(lcd_screen);
             lcd.setCursor(1,0);
-            lcd.println(receiver);
+            if (curr_key == "hmc\n") lcd.print("HMC:");
+            else if (curr_key == "humidity\n") lcd.print("Humidity:");
+            else if (curr_key == "baro\n") lcd.print("Barometer:");
+
+            lcd.setCursor (2,0);
+            lcd.print(receiver);
 
             // Send only when it gets the response
             
@@ -130,7 +137,7 @@ void loop()
     }else {
         if (count >= 5000) {
             float temp_temperature = getTemp102();
-            if (temp_temperature < 50) {
+            if (temp_temperature < 50 && temp_temperature > 5) {
                 temp = temp_temperature;
                 count = 0;
             } 

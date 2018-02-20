@@ -1,5 +1,7 @@
 #include <XBee.h>
 #include <Wire.h>
+#include <math.h>
+#define PI 3.141592653
 
 #define TMP102 0x48
 #define HMC_address 0x1E //0011110b, I2C 7bit address of HMC5883
@@ -266,12 +268,9 @@ void xbee_respond () {
             else if (curr_key == "hmc") {
                 int x, y, z;
                 getHMC(&x, &y, &z);
-                myString = String(x);
-                myString += " ";
-                myString += String(y);
-                myString += " ";
-                myString += String (z);
-
+                double angle = (atan2(double(y), double(x))/PI)*180 + 180;
+                myString = String(angle);
+                myString += " degrees";
                 Serial.println ("Message replied!_HMC");
                 
             }
@@ -287,7 +286,7 @@ void xbee_respond () {
             }
 
             // Send the payload out
-            delay(1000);
+            delay(500);
             myString.toCharArray(payload, 29);
             xbee.send(zbTx);
         }
