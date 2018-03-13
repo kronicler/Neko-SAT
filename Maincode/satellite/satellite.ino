@@ -44,7 +44,7 @@ ModemStatusResponse msr = ModemStatusResponse();
 
 // Sending end
 
-uint8_t payload[201] = "\0";
+uint8_t payload[31] = "\0";
 
 
 XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA02);
@@ -251,7 +251,9 @@ void xbee_respond () {
             Serial.println (receiver); 
 
             // Begin of comma seperated values 
-            String myString = String (getHumidity());
+            String myString = "\\";
+
+            myString += String (getHumidity());
             myString += ", ";
             
             int x, y, z;
@@ -265,18 +267,16 @@ void xbee_respond () {
             temperature = bmp085GetTemperature(bmp085ReadUT());
             pressure = bmp085GetPressure(bmp085ReadUP());
             
-            
-            myString += ", ";
-
             myString += String(pressure);
             
             myString += ", ";
             
             myString += String (temperature*0.1);
+            //myString += "\n";
 
             // Send the payload out
-            delay(500);
-            myString.toCharArray(payload, 200);
+            //delay(500);
+            myString.toCharArray(payload, 30);
             xbee.send(zbTx);
         }
     }

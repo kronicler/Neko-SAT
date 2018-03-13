@@ -69,11 +69,11 @@ void xbee_respond () {
             lcd.clear();
             uint8_t* rxData = rx.getData();
             String receiver = String((char *)rxData);
-            Serial.print (receiver); // Suppose to print all sensor data
-
+            Serial.println (receiver); // Suppose to print all sensor data
+            lcd.print(receiver);
             
             // Send only when it gets the response
-            
+            delay(500);
             xbee.send(zbTx);
         //}
     }
@@ -114,7 +114,7 @@ void loop()
             count = 0;
         } 
     }
-    String (temp).toCharArray(payload, 29);
+    String ("Hello").toCharArray(payload, 29);
     count++;
     xbee_respond();
 }
