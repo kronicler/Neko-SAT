@@ -14,7 +14,9 @@ const unsigned char OSS = 0;  // Oversampling Setting
 
 int count = 5000;
 float temp = 0.0;
-String curr_key;
+
+int heading_camera = '0'; 
+
 XBee xbee = XBee();
 
 // create reusable response objects for responses we expect to handle
@@ -75,6 +77,7 @@ void xbee_respond () {
             // Send only when it gets the response
             delay(500);
             xbee.send(zbTx);
+            if (heading_camera != '0') heading_camera = '0';
         //}
     }
 }
@@ -85,6 +88,7 @@ void setup()
     // start xbee in serial 2
     Serial2.begin(9600);
     Serial.begin(9600);
+    //Serial1.begin(9600);
     xbee.setSerial(Serial2);
     Wire.begin();
 
@@ -105,7 +109,13 @@ void setup()
 void loop()
 {
     // Sender adaptation
-
+    //heading = Serial1.read();
+    if (Serial.available() > 0) {
+      heading_camera = Serial.read();
+      Serial.println (heading_camera);
+      // 0 by default
+    }
+    
     // Update temperature 
     if (count >= 5000) {
         float temp_temperature = getTemp102();
@@ -114,7 +124,7 @@ void loop()
             count = 0;
         } 
     }
-    String ("Hello").toCharArray(payload, 29);
+    String (heading_camera).toCharArray(payload, 29);
     count++;
     xbee_respond();
 }

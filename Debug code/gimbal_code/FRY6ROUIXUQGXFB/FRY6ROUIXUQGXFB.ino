@@ -84,6 +84,10 @@ VectorInt16 aaWorld;    // [x, y, z]            world-frame accel sensor measure
 VectorFloat gravity;    // [x, y, z]            gravity vector
 float ypr[3];           // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
 
+
+// TODO: Change the following to global variables and allow camera controls to control it. 
+
+
 // relative ypr[x] usage based on sensor orientation when mounted, e.g. ypr[PITCH]
 #define PITCH   1     // defines the position within ypr[x] variable for PITCH; may vary due to sensor orientation when mounted
 #define ROLL  2     // defines the position within ypr[x] variable for ROLL; may vary due to sensor orientation when mounted
@@ -132,7 +136,7 @@ void setup()
   Serial.println(F("Initializing DMP"));
   devStatus = mpu.dmpInitialize();
 
-
+  // TODO: 
   // INPUT CALIBRATED OFFSETS HERE; SPECIFIC FOR EACH UNIT AND EACH MOUNTING CONFIGURATION!!!!
 
   mpu.setXGyroOffset(15);
