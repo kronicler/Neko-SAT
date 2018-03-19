@@ -32,7 +32,6 @@ long pressure;
 const float p0 = 101325;     // Pressure at sea level (Pa)
 float altitude;
 
-String curr_key;
 
 XBee xbee = XBee();
 
@@ -232,6 +231,16 @@ float getHumidity () {
     return (float)analogRead(A0)*100 /1024;
 }
 
+void udpateGimbal (String receiver) {
+    if (receiver != "0") { // or "\0"
+        // Serial send to the gimbal duino 
+        int command = receiver[0] - '0';
+        // Gimbal will only move on command 
+        Serial3.write(command);
+    }
+}
+
+
 void xbee_respond () {
     xbee.readPacket();
     //flashLed(dataLed, 1, 10);
@@ -248,34 +257,37 @@ void xbee_respond () {
             uint8_t* rxData = rx.getData();
             String receiver = String((char *)rxData);
 
+            udpateGimbal (receiver);
+
             Serial.println (receiver); 
 
             // Begin of comma seperated values 
             String myString = "\\";
 
-            myString += String (getHumidity());
+            //myString += String (getHumidity());
+            myString += "dummy1";
             myString += ", ";
             
             int x, y, z;
-            getHMC(&x, &y, &z);
-            double angle = (atan2(double(y), double(x))/PI)*180 + 180;
-            myString += String(angle);
-
+            //getHMC(&x, &y, &z);
+            //double angle = (atan2(double(y), double(x))/PI)*180 + 180;
+            //myString += String(angle);
+            myString += "dummy2";
             
             myString += ", ";
 
-            temperature = bmp085GetTemperature(bmp085ReadUT());
-            pressure = bmp085GetPressure(bmp085ReadUP());
-            
-            myString += String(pressure);
+            //temperature = bmp085GetTemperature(bmp085ReadUT());
+            //pressure = bmp085GetPressure(bmp085ReadUP());
+
+            myString += "dummy3";
+            //myString += String(pressure);
             
             myString += ", ";
-            
-            myString += String (temperature*0.1);
+
+            myString += "dummy4";
+            //myString += String (temperature*0.1);
             //myString += "\n";
 
-            // Send the payload out
-            //delay(500);
             myString.toCharArray(payload, 30);
             xbee.send(zbTx);
         }
@@ -289,16 +301,18 @@ void setup()
     Serial2.begin(9600);
     Serial.begin(9600);
     xbee.setSerial(Serial2);
+    Serial3.begin(9600);
     Wire.begin();
     
     //Put the HMC5883 IC into the correct operating mode
-    Wire.beginTransmission(HMC_address); //open communication with HMC5883
-    Wire.write(0x02); //select mode register
-    Wire.write(0x00); //continuous measurement mode
+    //Wire.beginTransmission(HMC_address); //open communication with HMC5883
+    //Wire.write(0x02); //select mode register
+    //Wire.write(0x00); //continuous measurement mode
+    
     Wire.endTransmission();
 
     
-    bmp085Calibration();
+    //bmp085Calibration();
     
 }
 

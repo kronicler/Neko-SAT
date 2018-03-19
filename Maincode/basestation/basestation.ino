@@ -17,6 +17,8 @@ float temp = 0.0;
 
 int heading_camera = '0'; 
 
+String receiver;
+
 XBee xbee = XBee();
 
 // create reusable response objects for responses we expect to handle
@@ -70,8 +72,9 @@ void xbee_respond () {
             // get data
             lcd.clear();
             uint8_t* rxData = rx.getData();
-            String receiver = String((char *)rxData);
-            Serial.println (receiver); // Suppose to print all sensor data
+            
+            receiver = String((char *)rxData);
+            
             lcd.print(receiver);
             
             // Send only when it gets the response
@@ -111,9 +114,11 @@ void loop()
     // Sender adaptation
     //heading = Serial1.read();
     if (Serial.available() > 0) {
+      // Use heading_camera as a means of pinging too. 0 means nothing 
       heading_camera = Serial.read();
       Serial.println (heading_camera);
-      // 0 by default
+      Serial.println (receiver); // Only serial print on request 
+      // 0 by default - Also used for pinging 
     }
     
     // Update temperature 
