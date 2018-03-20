@@ -101,7 +101,7 @@ void setup()
 {
 
   Servo1.attach(10);  // attaches the servo on D11 to the servo object
-  Servo2.attach(11);  // Second servo on D11
+  Servo2.attach(9);  // Second servo on D11
   delay(50);
   Servo1.write(0);	// These are command checks to see if the servos work and
   Servo2.write(60);	// to help w/ the initial installation.
