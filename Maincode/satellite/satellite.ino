@@ -46,7 +46,7 @@ ModemStatusResponse msr = ModemStatusResponse();
 
 // Sending end
 
-uint8_t payload[31] = "\0";
+uint8_t payload[51] = "\0";
 
 
 XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA02);
@@ -292,7 +292,7 @@ void xbee_respond () {
 
             // Send the payload out
             //delay(500);
-            myString.toCharArray(payload, 30);
+            myString.toCharArray(payload, 50);
             xbee.send(zbTx);
         }
     }

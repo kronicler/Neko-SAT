@@ -29,7 +29,7 @@ ModemStatusResponse msr = ModemStatusResponse();
 
 // Sending end
 
-uint8_t payload[30] = "\0";
+uint8_t payload[51] = "\0";
 
 XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA08);
 ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
@@ -98,7 +98,7 @@ void setup()
     delay (1000);
     temp = getTemp102();
     // Initiate the first handshake
-    String(temp).toCharArray(payload, 29);
+    String(temp).toCharArray(payload, 50);
     
     xbee.send(zbTx);
     
