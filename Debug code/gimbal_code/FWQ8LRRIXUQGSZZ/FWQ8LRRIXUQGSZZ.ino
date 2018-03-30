@@ -47,8 +47,8 @@ int giro_deadzone=1;     //Giro error allowed, make it lower to get more precisi
 // specific I2C addresses may be passed as a parameter here
 // AD0 low = 0x68 (default for InvenSense evaluation board)
 // AD0 high = 0x69
-//MPU6050 accelgyro;
-MPU6050 accelgyro(0x68); // <-- use for AD0 high
+MPU6050 accelgyro;
+//MPU6050 accelgyro(0x68); // <-- use for AD0 high
 
 int16_t ax, ay, az,gx, gy, gz;
 
@@ -63,7 +63,7 @@ void setup() {
   TWBR = 24; // 400kHz I2C clock (200kHz if CPU is 8MHz). Leonardo measured 250kHz.
 
   // initialize serial communication
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   // initialize device
   accelgyro.initialize();
