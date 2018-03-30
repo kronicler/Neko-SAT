@@ -139,12 +139,12 @@ void setup()
   // TODO: 
   // INPUT CALIBRATED OFFSETS HERE; SPECIFIC FOR EACH UNIT AND EACH MOUNTING CONFIGURATION!!!!
 
-  mpu.setXGyroOffset(15);
-  mpu.setYGyroOffset(-64);
-  mpu.setZGyroOffset(6);
-  mpu.setXAccelOffset(-2309);
-  mpu.setYAccelOffset(-4084);
-  mpu.setZAccelOffset(1383);
+  mpu.setXGyroOffset(16);
+  mpu.setYGyroOffset(-53);
+  mpu.setZGyroOffset(33);
+  mpu.setXAccelOffset(-1127);
+  mpu.setYAccelOffset(-5434);
+  mpu.setZAccelOffset(609);
 
   // make sure it worked (returns 0 if so)
   if (devStatus == 0)
@@ -240,9 +240,26 @@ void processAccelGyro()
 
     // flush buffer to prevent overflow
     mpu.resetFIFO();
+    
+    // TODO: Implement a count feature here to count when the servo is in the right
+    // position then stop
 
-    Servo1.write(mpuPitch + 90);
-    Servo2.write(mpuRoll + 90);
+    
+    //if (fabs(mpuPitch) > 1)
+      Servo1.write(mpuPitch + 90);
+    //else 
+      //Servo1.write (81); // Stop
+    
+    //if (fabs(mpuRoll) > 1)    
+      Servo2.write(mpuRoll + 90);
+    //else 
+      //Servo2.write(84); // stop
+
+    
+    Serial.print ("mpupitch: ");
+    Serial.println (mpuPitch);
+    Serial.print ("mpuroll: ");
+    Serial.println (mpuRoll);
     //delay(10);
 
     // flush buffer to prevent overflow
