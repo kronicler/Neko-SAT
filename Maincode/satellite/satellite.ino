@@ -232,9 +232,18 @@ float getHumidity () {
     return (float)analogRead(A0)*100 /1024;
 }
 
+void udpateGimbal (String receiver) {
+    if (receiver != "0") { // or "\0"
+        // Serial send to the gimbal duino 
+        int command = receiver[0] - '0';
+        // Gimbal will only move on command 
+        Serial3.write(command);
+    }
+}
+
+
 void xbee_respond () {
     xbee.readPacket();
-    //flashLed(dataLed, 1, 10);
     if (xbee.getResponse().isAvailable())
     {
         // TODO: Add receiver for camera controls here to be passed down to the other arduino. - Only to be sent on serial receive 
@@ -247,6 +256,8 @@ void xbee_respond () {
             // get data
             uint8_t* rxData = rx.getData();
             String receiver = String((char *)rxData);
+            
+            udpateGimbal (receiver);
 
             Serial.println (receiver); 
 
@@ -289,6 +300,7 @@ void setup()
     Serial2.begin(9600);
     Serial.begin(9600);
     xbee.setSerial(Serial2);
+    Serial3.begin(9600);
     Wire.begin();
     
     //Put the HMC5883 IC into the correct operating mode
