@@ -32,7 +32,9 @@ long pressure;
 const float p0 = 101325;     // Pressure at sea level (Pa)
 float altitude;
 
-String curr_key;
+
+int smokeA0 = A5;
+
 
 XBee xbee = XBee();
 
@@ -284,6 +286,9 @@ void xbee_respond () {
             
             myString += String (temperature*0.1);
             //myString += "\n";
+            myString += ", ";
+
+            myString += String ((int)analogRead(smokeA0));
 
             // Send the payload out
             //delay(500);
@@ -311,6 +316,8 @@ void setup()
 
     
     bmp085Calibration();
+
+    pinMode(smokeA0, INPUT);
     
 }
 
