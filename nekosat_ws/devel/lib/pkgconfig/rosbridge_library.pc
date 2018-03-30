@@ -1,0 +1,8 @@
+prefix=/home/ttg/catkin_ws/devel
+
+Name: rosbridge_library
+Description: Description of rosbridge_library
+Version: 0.8.6
+Cflags: -I/home/ttg/catkin_ws/devel/include
+Libs: -L/home/ttg/catkin_ws/devel/lib 
+Requires: message_runtime std_msgs geometry_msgs

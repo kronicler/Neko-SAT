@@ -1,0 +1,8 @@
+prefix=/home/ttg/catkin_ws/install
+
+Name: rosapi
+Description: Description of rosapi
+Version: 0.8.6
+Cflags: -I/home/ttg/catkin_ws/install/include
+Libs: -L/home/ttg/catkin_ws/install/lib 
+Requires: message_runtime
