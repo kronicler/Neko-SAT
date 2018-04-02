@@ -1,8 +1,0 @@
-prefix=/home/ttg/catkin_ws/install
-
-Name: rosbridge_server
-Description: Description of rosbridge_server
-Version: 0.8.6
-Cflags: 
-Libs: -L/home/ttg/catkin_ws/install/lib 
-Requires: 

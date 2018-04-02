@@ -1,8 +1,8 @@
-prefix=/home/ttg/catkin_ws/devel
+prefix=/home/ttg/github/EG1310_ESD/nekosat_ws/devel
 
 Name: keyboard_tele
 Description: Description of keyboard_tele
 Version: 0.0.0
 Cflags: 
-Libs: -L/home/ttg/catkin_ws/devel/lib 
+Libs: -L/home/ttg/github/EG1310_ESD/nekosat_ws/devel/lib 
 Requires: 

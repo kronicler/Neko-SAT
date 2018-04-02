@@ -7,5 +7,9 @@
 # new environment variables
 
 # modified environment variables
-export PATH="/opt/ros/kinetic/bin:/home/ttg/bin:/home/ttg/.local/bin:/home/ttg/bin:/home/ttg/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
-export PWD="/home/ttg/catkin_ws/build"
+export CMAKE_PREFIX_PATH="/home/ttg/github/EG1310_ESD/nekosat_ws/devel:$CMAKE_PREFIX_PATH"
+export LD_LIBRARY_PATH="/home/ttg/github/EG1310_ESD/nekosat_ws/devel/lib:$LD_LIBRARY_PATH"
+export PKG_CONFIG_PATH="/home/ttg/github/EG1310_ESD/nekosat_ws/devel/lib/pkgconfig:$PKG_CONFIG_PATH"
+export PWD="/home/ttg/github/EG1310_ESD/nekosat_ws/build"
+export ROSLISP_PACKAGE_DIRECTORIES="/home/ttg/github/EG1310_ESD/nekosat_ws/devel/share/common-lisp"
+export ROS_PACKAGE_PATH="/home/ttg/github/EG1310_ESD/nekosat_ws/src:$ROS_PACKAGE_PATH"
