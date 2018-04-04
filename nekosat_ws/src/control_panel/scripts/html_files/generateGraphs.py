@@ -11,6 +11,7 @@ heading = []
 pressure = []
 temperature = []
 airQuality = []
+dust = []
 # Expand as necessary
 
 def generate():
@@ -24,6 +25,7 @@ def generate():
             pressure.append(float(row[2]))
             temperature.append(float(row[3]))
             airQuality.append(float(row[4]))
+            dust.append(float(row[5]))
             #print(row)
     csvfile.close()
 
@@ -53,18 +55,25 @@ def generate():
     plt.title('Pressure Graph', size=20)
     mpld3.save_html(fig3,"/home/ttg/catkin_ws/src/control_panel/scripts/html_files/graphs/pres.html")
 
-    fig3 = plt.figure(4)
+    fig4 = plt.figure(4)
     plt.plot(x, temperature)
     plt.xlabel('Readings')
     plt.ylabel('Temperature [Degree Celsius]')
     plt.title('Temperature Graph', size=20)
-    mpld3.save_html(fig3,"/home/ttg/catkin_ws/src/control_panel/scripts/html_files/graphs/temp.html")
+    mpld3.save_html(fig4,"/home/ttg/catkin_ws/src/control_panel/scripts/html_files/graphs/temp.html")
 
-    fig3 = plt.figure(5)
+    fig5 = plt.figure(5)
     plt.plot(x, airQuality)
     plt.xlabel('Readings')
     plt.ylabel('Air Quality')
     plt.title('Air Quality Graph', size=20)
-    mpld3.save_html(fig3,"/home/ttg/catkin_ws/src/control_panel/scripts/html_files/graphs/air.html")
+    mpld3.save_html(fig5,"/home/ttg/catkin_ws/src/control_panel/scripts/html_files/graphs/air.html")
+
+    fig6 = plt.figure(6)
+    plt.plot(x, dust)
+    plt.xlabel('Readings')
+    plt.ylabel('Dust')
+    plt.title('Dust Graph', size=20)
+    mpld3.save_html(fig6,"/home/ttg/catkin_ws/src/control_panel/scripts/html_files/graphs/dust.html")
 
 generate()

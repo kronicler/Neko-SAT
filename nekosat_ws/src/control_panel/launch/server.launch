@@ -41,6 +41,4 @@
   <node name="web_video_bridge" pkg="web_video_server" type="web_video_server"/>
   <node name="control_panel" pkg="control_panel" type="server.py" />
   <node name="rosbag_recording_manager" pkg="control_panel" type="flask_node.py" />
-
-  <node name="front_cam" pkg="cam_process" type="front_cam"/>
 </launch>

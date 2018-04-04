@@ -13,7 +13,7 @@ class keyboard_controller:
         global command
         try:
             command = str(key.char)
-            if command == "w" or command == "a" or command == "s" or command == "d":
+            if command == "1" or command == "2" or command == "3" or command == "4":
                 pub.publish(command)
                 print('alphanumeric key {0} pressed'.format(key.char))
         except AttributeError:

@@ -29,7 +29,7 @@
   <nav class="navbar navbar-dark bg-dark">
     <h4 class="text-white"> N.E.K.O Satellite Control Panel</h4>
     <div class="input-group-btn">
-    <button type="button" class="btn btn-danger" onClick="manual_refresh();refresh_page()">Update Graphs</button>
+    <button type="button" class="btn btn-danger" onClick="refresh_page()">Update Graphs</button>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -59,21 +59,20 @@
       <p class="card-text"><small class="text-muted">Press "Update Graphs" to refresh the graphs</small></p>
     </div>
   </div> 
-<center><img src="http://localhost:8080/stream?topic=/Image_Stream" alt="cameraAlt.jpg"></center>
 <div class="row" id="Temperature/Pressure">
 <div class="card-group">
   <div class="card bg-light mb-3" style="width: 43rem;">
     <embed src="graphs/temp.html" height=510> 
     <div class="card-body">
       <h5 class="card-title">Temperature Graph</h5>
-      <p class="card-text">WIP.</p>
+      <p class="card-text"></p>
     </div>
   </div>
   <div class="card bg-light mb-3" style="width: 43rem;">
     <embed src="graphs/pres.html" height=510> 
     <div class="card-body">
       <h5 class="card-title">Pressure Graph</h5>
-      <p class="card-text">WIP.</p>
+      <p class="card-text"></p>
     </div>
   </div>
 </div>
@@ -83,14 +82,14 @@
     <embed src="graphs/air.html" height=510> 
     <div class="card-body">
       <h5 class="card-title">Air Quality Graph</h5>
-      <p class="card-text">WIP.</p>
+      <p class="card-text"></p>
     </div>
   </div>
   <div class="card bg-light mb-3" style="width: 43rem;">
     <embed src="graphs/humid.html" height=510> 
     <div class="card-body">
       <h5 class="card-title">Humidity Graph</h5>
-      <p class="card-text">WIP.</p>
+      <p class="card-text"></p>
     </div>
   </div>
 </div>
@@ -99,14 +98,14 @@
     <embed src="graphs/head.html" height=510> 
     <div class="card-body">
       <h5 class="card-title">Heading Graph</h5>
-      <p class="card-text">WIP.</p>
+      <p class="card-text"></p>
     </div>
   </div>
   <div class="card bg-light mb-3" style="width: 43rem;">
-    <embed src="graphs/test.html" height=510> 
+    <embed src="graphs/dust.html" height=510> 
     <div class="card-body">
-      <h5 class="card-title">Test Graph</h5>
-      <p class="card-text">WIP.</p>
+      <h5 class="card-title">Dust Graph</h5>
+      <p class="card-text"></p>
     </div>
   </div>
 </div>
