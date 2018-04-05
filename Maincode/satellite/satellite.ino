@@ -31,6 +31,8 @@ long pressure;
 // Use these for altitude conversions
 const float p0 = 101325;     // Pressure at sea level (Pa)
 float altitude;
+int voMeasured;
+int count = 10000;
 
 
 int smokeA0 = A5;
@@ -49,7 +51,7 @@ ModemStatusResponse msr = ModemStatusResponse();
 uint8_t payload[51] = "\0";
 
 
-XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA02);
+XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x40A9DC0A);
 ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
 ZBTxStatusResponse txStatus = ZBTxStatusResponse();
 
@@ -234,13 +236,17 @@ float getHumidity () {
     return (float)analogRead(A0)*100 /1024;
 }
 
+char last_state = '0';
+
 void udpateGimbal (String receiver) {
-    if (receiver != "0") { // or "\0"
-        // Serial send to the gimbal duino 
-        int command = receiver[0] - '0';
-        // Gimbal will only move on command 
-        Serial3.write(command);
-    }
+       // Serial send to the gimbal duino 
+       char command = receiver.toInt();
+       // Gimbal will only move on command 
+       if (command != last_state) {
+           //Serial.println (command);
+           Serial3.write(command);
+           last_state = command;
+       }
 }
 
 
@@ -261,7 +267,7 @@ void xbee_respond () {
             
             udpateGimbal (receiver);
 
-            Serial.println (receiver); 
+            //Serial.println (receiver); 
 
             // Begin of comma seperated values 
             String myString = "\\";
@@ -288,7 +294,20 @@ void xbee_respond () {
             //myString += "\n";
             myString += ", ";
 
+            
             myString += String ((int)analogRead(smokeA0));
+            myString += ", ";
+
+            if (count >= 10000) {
+                voMeasured = analogRead(6); // read the dust value
+                count = 0;
+            }
+            
+            float calcVoltage = voMeasured * (5.0 / 1024); 
+            float dustDensity = (0.17 * calcVoltage - 0.1)*1000; 
+
+            myString += String (dustDensity);
+            
 
             // Send the payload out
             //delay(500);
@@ -301,6 +320,7 @@ void xbee_respond () {
 
 void setup()
 {
+
     // start xbee in serial 2
     Serial2.begin(9600);
     Serial.begin(9600);
@@ -314,16 +334,16 @@ void setup()
     Wire.write(0x00); //continuous measurement mode
     Wire.endTransmission();
 
-    
+    voMeasured = analogRead(6);
     bmp085Calibration();
 
     pinMode(smokeA0, INPUT);
-    
 }
 
 // continuously reads packets, looking for ZB Receive or Modem Status
 void loop()
 {
     xbee_respond();
+    count++;
 }
 

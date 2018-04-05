@@ -101,9 +101,10 @@ float ypr[3];           // [yaw, pitch, roll]   yaw/pitch/roll container and gra
 void setup()
 {
 
-  Servo1.attach(10);  // attaches the servo on D11 to the servo object
-  Servo2.attach(9);  // Second servo on D11
+  Servo1.attach(9);  // attaches the servo on D11 to the servo object
+  Servo2.attach(10);  // Second servo on D11
   delay(50);
+  /*
   Servo1.write(0);  // These are command checks to see if the servos work and
   Servo2.write(60); // to help w/ the initial installation.
   delay(500);   // Make sure these movements are clear from the rest of the chassis.
@@ -112,6 +113,7 @@ void setup()
   delay(500);
   Servo1.write(0);
   Servo2.write(90);
+  */
   delay(500);
 
   // join I2C bus (I2Cdev library doesn't do this automatically)
@@ -122,11 +124,12 @@ void setup()
   Fastwire::setup(400, true);
 #endif
 
-  Serial.begin(115200);
-  while (!Serial);      // wait for Leonardo enumeration, others continue immediately
+  Serial1.begin(9600);
+  //Serial.begin(9600);
+  //while (!Serial1);      // wait for Leonardo enumeration, others continue immediately
 
   // initialize device
-  Serial.println(F("Initializing I2C devices..."));
+  //Serial1.println(F("Initializing I2C devices..."));
   mpu.initialize();
 
   /*
@@ -187,29 +190,38 @@ void loop(void)
 {
   // TODO: Make a receiver that receives command here 
   // Sender adaptation
-  if (Serial.available() > 0) {
+  if (Serial1.available() > 0) {
       int current;
-      current = Serial.read();
+      current = Serial1.read();
+      digitalWrite(17, HIGH); 
+      Serial.println (current);
       switch (current) {
-          case 0:
+          case '0':
           // No movement 
           break; 
-          case 1:
+          case '1':
           // Move upwards
-          Servo1Pos++;
+          Servo1Pos+= 5;
+          Servo1Pos = (Servo1Pos >= 90) ? 0 : Servo1Pos;
           break;
-          case 2:
+          case '2':
           // Move downwards
-          Servo1Pos--;
+          Servo1Pos-= 5;
+          Servo1Pos = (Servo1Pos <= 0) ? 90 : Servo1Pos;
           break; 
-          case 3:
+          case '3':
           // Move Left
-          Servo2Pos++;
+          Servo2Pos+= 5;
+          Servo2Pos = (Servo2Pos >= 90) ? 0 : Servo2Pos;
           break; 
-          case 4:
+          case '4':
           // Move right
-          Servo2Pos--;
+          Servo2Pos-= 5;
+          Servo2Pos = (Servo2Pos <= 0) ? 90 : Servo2Pos;
       }
+  }else {
+      digitalWrite(17, LOW); 
+
   }
 
   
@@ -278,12 +290,28 @@ void processAccelGyro()
 
     
     //if (fabs(mpuPitch) > 1)
-      Servo1.write(mpuPitch + 90 + Servo1Pos);
     //else 
       //Servo1.write (81); // Stop
       
-    //if (fabs(mpuRoll) > 1)    
-      Servo2.write(mpuRoll + 90 + Servo2Pos);
+    //if (fabs(mpuRoll) > 1)
+
+    
+    if (Servo2.read() >= 135 && Servo2.read() <= 180) {
+        Servo1.write(mpuRoll + 90 + Servo1Pos);
+    }else if (Servo2.read() >= 90 && Servo2.read() < 135) {
+        Servo1.write(mpuPitch + 90 + Servo1Pos);
+    }else if (Servo2.read() >= 45 && Servo2.read() <= 90) {
+        Servo1.write(-mpuRoll + 90 + Servo1Pos);
+    }else {
+        Servo1.write(-mpuPitch + 90 + Servo1Pos);
+    }
+        
+    Servo2.write(90 + Servo2Pos);
+
+
+    //Serial.print (Servo1.read());
+    //Serial.print (" ");
+    //Serial.println (Servo2.read());
     //else 
       //Servo2.write(84); // stop
 

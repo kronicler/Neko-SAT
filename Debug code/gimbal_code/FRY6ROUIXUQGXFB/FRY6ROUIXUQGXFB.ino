@@ -103,6 +103,7 @@ void setup()
   Servo1.attach(10);  // attaches the servo on D11 to the servo object
   Servo2.attach(9);  // Second servo on D11
   delay(50);
+  /*
   Servo1.write(0);	// These are command checks to see if the servos work and
   Servo2.write(60);	// to help w/ the initial installation.
   delay(500);		// Make sure these movements are clear from the rest of the chassis.
@@ -111,6 +112,7 @@ void setup()
   delay(500);
   Servo1.write(0);
   Servo2.write(90);
+  */
   delay(500);
 
   // join I2C bus (I2Cdev library doesn't do this automatically)
@@ -122,7 +124,7 @@ void setup()
 #endif
 
   Serial.begin(115200);
-  while (!Serial);      // wait for Leonardo enumeration, others continue immediately
+  //while (!Serial);      // wait for Leonardo enumeration, others continue immediately
 
   // initialize device
   Serial.println(F("Initializing I2C devices..."));

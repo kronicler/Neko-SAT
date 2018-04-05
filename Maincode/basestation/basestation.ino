@@ -31,7 +31,7 @@ ModemStatusResponse msr = ModemStatusResponse();
 
 uint8_t payload[51] = "\0";
 
-XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x4098DA08);
+XBeeAddress64 addr64 = XBeeAddress64(0x0013A200, 0x40A9DB24);
 ZBTxRequest zbTx = ZBTxRequest(addr64, payload, sizeof(payload));
 ZBTxStatusResponse txStatus = ZBTxStatusResponse();
 
@@ -80,7 +80,7 @@ void xbee_respond () {
             // Send only when it gets the response
             delay(500);
             xbee.send(zbTx);
-            if (heading_camera != '0') heading_camera = '0';
+            //if (heading_camera != '0') heading_camera = '0';
         //}
     }
 }
