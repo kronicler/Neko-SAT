@@ -295,18 +295,18 @@ void processAccelGyro()
       
     //if (fabs(mpuRoll) > 1)
 
-    
-    if (Servo2.read() >= 135 && Servo2.read() <= 180) {
+    Servo2.write(90 + Servo2Pos);
+
+    if (Servo2.read() >= 135 && Servo2.read() < 180) {
         Servo1.write(mpuRoll + 90 + Servo1Pos);
     }else if (Servo2.read() >= 90 && Servo2.read() < 135) {
         Servo1.write(mpuPitch + 90 + Servo1Pos);
-    }else if (Servo2.read() >= 45 && Servo2.read() <= 90) {
+    }else if (Servo2.read() >= 45 && Servo2.read() < 90) {
         Servo1.write(-mpuRoll + 90 + Servo1Pos);
     }else {
         Servo1.write(-mpuPitch + 90 + Servo1Pos);
     }
         
-    Servo2.write(90 + Servo2Pos);
 
 
     //Serial.print (Servo1.read());
