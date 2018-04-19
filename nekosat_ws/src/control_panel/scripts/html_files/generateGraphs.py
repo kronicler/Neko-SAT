@@ -12,6 +12,7 @@ pressure = []
 temperature = []
 airQuality = []
 dust = []
+altitude = []
 # Expand as necessary
 
 def generate():
@@ -26,6 +27,8 @@ def generate():
             temperature.append(float(row[3]))
             airQuality.append(float(row[4]))
             dust.append(float(row[5]))
+            altitude.append(float(row[6]))
+
             #print(row)
     csvfile.close()
 
@@ -51,7 +54,7 @@ def generate():
     fig3 = plt.figure(3)
     plt.plot(x, pressure)
     plt.xlabel('Readings')
-    plt.ylabel('Pressure [hPa]')
+    plt.ylabel('Pressure [Pa]')
     plt.title('Pressure Graph', size=20)
     mpld3.save_html(fig3,"/home/ttg/catkin_ws/src/control_panel/scripts/html_files/graphs/pres.html")
 
@@ -75,5 +78,12 @@ def generate():
     plt.ylabel('Dust')
     plt.title('Dust Graph', size=20)
     mpld3.save_html(fig6,"/home/ttg/catkin_ws/src/control_panel/scripts/html_files/graphs/dust.html")
+
+    fig6 = plt.figure(7)
+    plt.plot(x, altitude)
+    plt.xlabel('Readings')
+    plt.ylabel('Altitude')
+    plt.title('Altitude Graph', size=20)
+    mpld3.save_html(fig6,"/home/ttg/catkin_ws/src/control_panel/scripts/html_files/graphs/alt.html")
 
 generate()

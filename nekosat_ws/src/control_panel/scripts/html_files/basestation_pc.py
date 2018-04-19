@@ -35,10 +35,12 @@ def normalPacket():
     satData.append(sio.readline())
     satData.append(sio.readline())
 
-    print(str(satData[1])[1:-1])
     temp = str(satData[1])[1:]
+    data = temp.split(",")
     sio.flush()
     if count > 10 and len(temp) > 32:
+        temp = temp[:-1] + ", " + str(44330 * (1 - (float(data[2])/101325)**(1/5.255))) + "\n"
+        print(temp)
         pub.publish(temp[:-1])
         outfile = open("/home/ttg/catkin_ws/src/control_panel/scripts/html_files/datafile.csv","a")
         outfile.write(temp)
